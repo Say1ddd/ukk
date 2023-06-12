@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Kategori;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class KategoriController extends Controller
 {
@@ -12,7 +15,10 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        //
+        $kategoris = DB::table('kategori')->get();
+        return Inertia::render('Kategori/Index', [
+            'kategoris' => $kategoris,
+        ]);
     }
 
     /**
@@ -20,7 +26,7 @@ class KategoriController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Kategori/Create');
     }
 
     /**
@@ -28,7 +34,24 @@ class KategoriController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'deskripsi' => ['required', 'string'],
+                'kategori' => ['required', 'in:M,A,BHP,BTHP'],
+            ]);
+
+            Kategori::create([
+                'deskripsi' => $request->deskripsi,
+                'kategori' => $request->kategori,
+            ]);
+
+            DB::commit();
+            return Redirect::route('kategori.index')->with('success', 'Kategori berhasil ditambahkan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -36,7 +59,10 @@ class KategoriController extends Controller
      */
     public function show(Kategori $kategori)
     {
-        //
+        $kategori = DB::table('kategori')->where('id', $kategori->id)->first();
+        return Inertia::render('Kategori/Show', [
+            'kategori' => $kategori,
+        ]);
     }
 
     /**
@@ -44,7 +70,9 @@ class KategoriController extends Controller
      */
     public function edit(Kategori $kategori)
     {
-        //
+        return Inertia::render('Kategori/Edit', [
+            'kategori' => $kategori,
+        ]);
     }
 
     /**
@@ -52,7 +80,24 @@ class KategoriController extends Controller
      */
     public function update(Request $request, Kategori $kategori)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'deskripsi' => ['required', 'string'],
+                'kategori' => ['required', 'in:M,A,BHP,BTHP'],
+            ]);
+
+            $kategori->update([
+                'deskripsi' => $request->deskripsi,
+                'kategori' => $request->kategori,
+            ]);
+
+            DB::commit();
+            return Redirect::route('kategori.index')->with('success', 'Kategori berhasil diubah.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with('error', $e->getMessage());
+        }
     }
 
     /**
@@ -60,6 +105,14 @@ class KategoriController extends Controller
      */
     public function destroy(Kategori $kategori)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $kategori->delete();
+            DB::commit();
+            return Redirect::route('kategori.index')->with('success', 'Kategori berhasil dihapus.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return Redirect::back()->with('error', $e->getMessage());
+        }
     }
 }
