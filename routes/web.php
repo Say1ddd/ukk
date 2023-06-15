@@ -1,11 +1,13 @@
 <?php
 
 use Inertia\Inertia;
-use App\Models\Kategori;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\BarangMasukController;
+use App\Http\Controllers\BarangKeluarController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -26,6 +28,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('kategori', KategoriController::class);
+    Route::resource('barang', BarangController::class);
+    Route::resource('barangmasuk', BarangMasukController::class);
+    Route::resource('barangkeluar', BarangKeluarController::class);
 });
 
 require __DIR__.'/auth.php';
