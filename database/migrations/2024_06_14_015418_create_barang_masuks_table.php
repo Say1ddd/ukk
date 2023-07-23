@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('barang_masuk', function (Blueprint $table) {
             $table->id();
+            $table->date('tgl_masuk');
+            $table->bigInteger('qty_masuk')->default(1);
+            $table->foreignId('barang_id')->constrained('barang')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps();
         });
     }
