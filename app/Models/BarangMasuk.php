@@ -8,4 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class BarangMasuk extends Model
 {
     use HasFactory;
+
+    protected $table = 'barang_masuk';
+
+    protected $fillable = [
+        'barang_id',
+        'jumlah',
+        'tanggal',
+    ];
+
+    public function barang()
+    {
+        return $this->belongsTo(Barang::class);
+    }
 }
