@@ -13,8 +13,8 @@ class BarangMasuk extends Model
 
     protected $fillable = [
         'barang_id',
-        'jumlah',
-        'tanggal',
+        'qty_masuk',
+        'tgl_masuk',
     ];
 
     public function barang()
