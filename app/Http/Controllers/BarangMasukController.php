@@ -29,7 +29,7 @@ class BarangMasukController extends Controller
      */
     public function create(): Response
     {
-        $barangs = Barang::all();
+        $barangs = DB::table('barang')->get();
 
         return Inertia::render('BarangMasuk/Create', [
             'barangs' => $barangs
@@ -60,7 +60,7 @@ class BarangMasukController extends Controller
             return redirect()->route('barangmasuk.index')->with('success', 'Barang masuk berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('barangmasuk.index')->with('error', 'Barang masuk gagal ditambahkan' . $e->getMessage());
+            return redirect()->back()->with('error', 'Barang masuk gagal ditambahkan' . $e->getMessage());
         }
     }
 
