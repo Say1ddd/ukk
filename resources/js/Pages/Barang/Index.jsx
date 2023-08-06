@@ -19,14 +19,13 @@ const Title = [
 const Index = ({ auth, barangs, flash }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
-    // const filteredBarangs = barangs.filter(barang => 
-    //     barang.merk.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     barang.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     barang.seri.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     barang.spesifikasi.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     barang.stok.toString().includes(searchQuery) ||
-    //     barang.kategori.deskripsi.toLowerCase().includes(searchQuery.toLowerCase())
-    // );
+    const filteredBarangs = barangs.filter(barang => 
+        barang.merk.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        barang.seri.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        barang.spesifikasi.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        barang.stok.toString().includes(searchQuery) ||
+        barang.kategori.deskripsi.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <AuthenticatedLayout
@@ -74,8 +73,8 @@ const Index = ({ auth, barangs, flash }) => {
                                     <Table.Title key={index} value={title.value} />
                                 ))}
                             </Table.Head>
-                                {barangs.length > 0 ? (
-                                    barangs.map((barang) => (
+                                {filteredBarangs.length > 0 ? (
+                                    filteredBarangs.map((barang) => (
                                         <Table.Body key={barang.id}>
                                             <Table.Content value={barang.merk} />
                                             <Table.Content value={barang.seri} />

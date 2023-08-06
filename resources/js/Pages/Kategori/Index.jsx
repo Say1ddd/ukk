@@ -17,11 +17,10 @@ const Title = [
 const Index = ({ auth, kategoris, flash }) => {
     const [searchQuery, setSearchQuery] = useState('')
 
-    // const filteredKategoris = kategoris.filter(kategori =>
-    //     kategori.kategori.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     kategori.deskripsi.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    //     kategori.id.toLowerCase().includes(searchQuery.toLowerCase())
-    // )
+    const filteredKategoris = kategoris.filter(kategori =>
+        kategori.kategori.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        kategori.deskripsi.toLowerCase().includes(searchQuery.toLowerCase())
+    )
 return (
     <AuthenticatedLayout
         user={auth.user}
@@ -69,8 +68,8 @@ return (
                             <Table.Title key={index} value={title.value} />
                         ))}
                     </Table.Head>
-                    {kategoris.length > 0 ? (
-                    kategoris.map((kategori) => (
+                    {filteredKategoris.length > 0 ? (
+                    filteredKategoris.map((kategori) => (
                         <Table.Body key={kategori.id}>
                             <Table.Content value={kategori.kategori} />
                             <Table.Content value={kategori.deskripsi} />
