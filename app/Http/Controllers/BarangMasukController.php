@@ -57,10 +57,10 @@ class BarangMasukController extends Controller
 
             DB::commit();
             
-            return redirect()->route('barangmasuk.index')->with('success', 'Barang masuk berhasil ditambahkan');
+            return Redirect::route('barangmasuk.index')->with('success', 'Barang masuk berhasil ditambahkan');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Barang masuk gagal ditambahkan' . $e->getMessage());
+            return Redirect::back()->with('error', 'Barang masuk gagal ditambahkan' . $e->getMessage());
         }
     }
 
