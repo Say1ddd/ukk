@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Barang;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 
 class BarangController extends Controller
 {
@@ -57,10 +58,10 @@ class BarangController extends Controller
         Barang::create($request->all());
 
         DB::commit();
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan');
+        return Redirect::route('barang.index')->with('success', 'Barang berhasil ditambahkan');
         } catch (\Exception $e) {
         DB::rollBack();
-        return redirect()->back()->with('error', $e->getMessage());
+        return Redirect::back()->with('error', $e->getMessage());
         }
     }
 
@@ -107,10 +108,10 @@ class BarangController extends Controller
         $barang->update($request->all());
 
         DB::commit();
-        return redirect()->route('barang.index')->with('success', 'Barang berhasil diubah');
+        return Redirect::route('barang.index')->with('success', 'Barang berhasil diubah');
         } catch (\Exception $e) {
         DB::rollBack();
-        return redirect()->back()->with('error', $e->getMessage());
+        return Redirect::back()->with('error', $e->getMessage());
         }
     }
 
@@ -123,10 +124,10 @@ class BarangController extends Controller
         try {
             $barang->delete();
             DB::commit();
-            return redirect()->route('barang.index')->with('success', 'Barang berhasil dihapus');
+            return Redirect::route('barang.index')->with('success', 'Barang berhasil dihapus');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', $e->getMessage());
+            return Redirect::back()->with('error', $e->getMessage());
         }
     }
 }
