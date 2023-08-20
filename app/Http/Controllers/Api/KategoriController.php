@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Models\Kategori;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 
 class KategoriController extends Controller
@@ -22,26 +23,31 @@ class KategoriController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request): JsonResponse
-    {
-        $request->validate([
-            'kategori' => ['required', 'max:255', 'unique:kategori,kategori'],
-            'deskripsi' => ['required', 'max:255']
-        ], [
-            'required' => ':attribute harus diisi',
-            'unique' => ':attribute sudah ada'
-        ]);
-    
-        $kategori = $request->kategori;
-    
-        $create = Kategori::create([
-            'deskripsi' => $request->deskripsi,
-            'kategori' => $kategori
-        ]);
-    
-        return response()->json([
-            'message' => 'Kategori berhasil dibuat',
-            'data' => $create
-        ], 201);
+    {   
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'deskripsi' => ['required', 'string'],
+                'kategori' => ['required', 'in:M,A,BHP,BTHP'],
+            ], [
+                'required' => ':attribute harus diisi',
+                'unique' => ':attribute sudah ada'
+            ]);
+
+            Kategori::create([
+                'kategori' => $request->kategori,
+                'deskripsi' => $request->deskripsi
+            ]);
+
+            DB::commit();
+            return response()->json(['status' => 'Kategori berhasil ditambahkan']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'Kategori gagal ditambahkan',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -49,7 +55,7 @@ class KategoriController extends Controller
      */
     public function show(string $id): JsonResponse
     {
-        $kategori = Kategori::where($id)->first();
+        $kategori = Kategori::find($id);
         if (!$kategori) {
             return response()->json(['status' => 'Kategori tidak ditemukan'], 404);
         }
@@ -61,26 +67,34 @@ class KategoriController extends Controller
      */
     public function update(Request $request, $id): JsonResponse
     {
-        $kategoriRecord = Kategori::where($id)->first();
+        DB::beginTransaction();
+        try {
+            $kategori = Kategori::find($id);
+            if (!$kategori) {
+                return response()->json(['status' => 'Kategori tidak ditemukan'], 404);
+            }
+            $request->validate([
+                'deskripsi' => ['required', 'string'],
+                'kategori' => ['required', 'in:M,A,BHP,BTHP'],
+            ], [
+                'required' => ':attribute harus diisi',
+                'unique' => ':attribute sudah ada'
+            ]);
 
-        $request->validate([
-            'kategori' => ['required', 'max:255', 'unique:kategori,kategori'],
-            'deskripsi' => ['required', 'max:255']
-        ], [
-            'required' => ':attribute harus diisi',
-            'unique' => ':attribute sudah ada'
-        ]);
+            $kategori->update([
+                'kategori' => $request->kategori,
+                'deskripsi' => $request->deskripsi
+            ]);
 
-        if (!$kategoriRecord) {
-            return response()->json(['status' => 'Kategori tidak ditemukan'], 404);
+            DB::commit();
+            return response()->json(['status' => 'Kategori berhasil diubah']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'Kategori gagal diubah',
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        $kategoriRecord->update([
-            'deskripsi' => $request->deskripsi,
-            'kategori' => $request->kategori
-        ]);
-    
-        return response()->json(['status' => 'Kategori berhasil diubah']);
     }
 
     /**
@@ -88,14 +102,21 @@ class KategoriController extends Controller
      */
     public function destroy(string $id): JsonResponse
     {
-        $kategori = Kategori::where($id)->first();
-        if (!$kategori) {
-            return response()->json(['status' => 'Kategori tidak ditemukan'], 404);
+        DB::beginTransaction();
+        try {
+            $kategori = Kategori::find($id);
+            if (!$kategori) {
+                return response()->json(['status' => 'Kategori tidak ditemukan'], 404);
+            }
+            $kategori->delete();
+            DB::commit();
+            return response()->json(['status' => 'Kategori berhasil dihapus']);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'status' => 'Kategori gagal dihapus',
+                'message' => $e->getMessage()
+            ], 500);
         }
-        if ($kategori->barangs()->count() > 0) {
-            return response()->json(['status' => 'Kategori tidak dapat dihapus'], 403);
-        }
-        $kategori->delete();
-        return response()->json(['status' => 'Kategori berhasil dihapus']);
     }
 }
