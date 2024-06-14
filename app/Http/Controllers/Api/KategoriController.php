@@ -47,9 +47,13 @@ class KategoriController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Kategori $kategori)
+    public function show(string $id): JsonResponse
     {
-        //
+        $kategori = Kategori::where($id)->first();
+        if (!$kategori) {
+            return response()->json(['status' => 'Kategori tidak ditemukan'], 404);
+        }
+        return response()->json(["data" => $kategori]);
     }
 
     /**
