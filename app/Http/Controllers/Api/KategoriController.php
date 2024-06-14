@@ -59,9 +59,28 @@ class KategoriController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Kategori $kategori)
+    public function update(Request $request, $id): JsonResponse
     {
-        //
+        $kategoriRecord = Kategori::where($id)->first();
+
+        $request->validate([
+            'kategori' => ['required', 'max:255', 'unique:kategori,kategori'],
+            'deskripsi' => ['required', 'max:255']
+        ], [
+            'required' => ':attribute harus diisi',
+            'unique' => ':attribute sudah ada'
+        ]);
+
+        if (!$kategoriRecord) {
+            return response()->json(['status' => 'Kategori tidak ditemukan'], 404);
+        }
+
+        $kategoriRecord->update([
+            'deskripsi' => $request->deskripsi,
+            'kategori' => $request->kategori
+        ]);
+    
+        return response()->json(['status' => 'Kategori berhasil diubah']);
     }
 
     /**
