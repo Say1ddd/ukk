@@ -67,8 +67,16 @@ class KategoriController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Kategori $kategori)
+    public function destroy(string $id): JsonResponse
     {
-        //
+        $kategori = Kategori::where($id)->first();
+        if (!$kategori) {
+            return response()->json(['status' => 'Kategori tidak ditemukan'], 404);
+        }
+        if ($kategori->barangs()->count() > 0) {
+            return response()->json(['status' => 'Kategori tidak dapat dihapus'], 403);
+        }
+        $kategori->delete();
+        return response()->json(['status' => 'Kategori berhasil dihapus']);
     }
 }
